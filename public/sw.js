@@ -1,9 +1,9 @@
 var CACHE_STATIC = 'static';
-var CACHE_STATIC_VERSION = '3';
+var CACHE_STATIC_VERSION = '4';
 var CACHE_STATIC_NAME = CACHE_STATIC + "-v" + CACHE_STATIC_VERSION;
 
 var CACHE_DYNAMIC = 'dynamic';
-var CACHE_DYNAMIC_VERSION = '3';
+var CACHE_DYNAMIC_VERSION = '4';
 var CACHE_DYNAMIC_NAME = CACHE_DYNAMIC + "-v" + CACHE_DYNAMIC_VERSION;
 
 self.addEventListener('install', function(event) {
