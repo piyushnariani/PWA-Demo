@@ -1,5 +1,6 @@
 var deferredPrompt;
 
+//Activate Promise polyfill if Promise is not supported by the current browser.
 if(!window.Promise){
     window.Promise = Promise;
 }
