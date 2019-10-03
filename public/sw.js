@@ -73,3 +73,14 @@ self.addEventListener('fetch', function(event) {
             })
     );
 });
+
+
+//Cache Only strategy
+// self.addEventListener('fetch', function(event){
+//     event.respondWith(caches.match(event.request));
+// });
+
+//Network only strategy
+// self.addEventListener('fetch', function(event){
+//     event.respondWith(fetch(event.request));
+// });
