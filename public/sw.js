@@ -6,28 +6,30 @@ var CACHE_DYNAMIC = 'dynamic';
 var CACHE_DYNAMIC_VERSION = '5';
 var CACHE_DYNAMIC_NAME = CACHE_DYNAMIC + "-v" + CACHE_DYNAMIC_VERSION;
 
+var STATIC_FILES = [
+    '/',
+    '/index.html',
+    '/fallback.html',
+    '/src/js/app.js',
+    '/src/js/feed.js',
+    '/src/js/promise.js',
+    '/src/js/fetch.js',
+    '/src/js/material.min.js',
+    '/src/css/app.css',
+    '/src/css/feed.css',
+    '/src/images/main-image.jpg',
+    'https://fonts.googleapis.com/css?family=Roboto:400,700',
+    'https://fonts.googleapis.com/icon?family=Material+Icons',
+    'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
+];
+
 self.addEventListener('install', function(event) {
     console.log('[Service Worker] Installing service worker...', event);
     event.waitUntil(
         caches.open(CACHE_STATIC_NAME)
             .then(function(cache) {
                 console.log('[SW] Precaching App Shell');
-                cache.addAll([
-                    '/',
-                    '/index.html',
-                    '/fallback.html',
-                    '/src/js/app.js',
-                    '/src/js/feed.js',
-                    '/src/js/promise.js',
-                    '/src/js/fetch.js',
-                    '/src/js/material.min.js',
-                    '/src/css/app.css',
-                    '/src/css/feed.css',
-                    '/src/images/main-image.jpg',
-                    'https://fonts.googleapis.com/css?family=Roboto:400,700',
-                    'https://fonts.googleapis.com/icon?family=Material+Icons',
-                    'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
-                ]);
+                cache.addAll(STATIC_FILES);
             })
     )
 });
@@ -116,6 +118,10 @@ self.addEventListener('fetch', function(event){
                             });
                 })
         );
+    } else if(inInArray(event.request.url, STATIC_FILES)){
+        event.respondWith(
+            caches.match(event.request)
+        )
     } else {
         event.respondWith(
             //Check if the response if present in the cache
@@ -147,3 +153,12 @@ self.addEventListener('fetch', function(event){
         );
     }
 })
+
+function inInArray(string, array){
+    for(var i=0; i<array.length; i++){
+        if(array[i] === string){
+            return true;
+        }
+    }
+    return false;
+}
