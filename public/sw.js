@@ -3,7 +3,7 @@ var CACHE_STATIC_VERSION = '6';
 var CACHE_STATIC_NAME = CACHE_STATIC + "-v" + CACHE_STATIC_VERSION;
 
 var CACHE_DYNAMIC = 'dynamic';
-var CACHE_DYNAMIC_VERSION = '4';
+var CACHE_DYNAMIC_VERSION = '5';
 var CACHE_DYNAMIC_NAME = CACHE_DYNAMIC + "-v" + CACHE_DYNAMIC_VERSION;
 
 self.addEventListener('install', function(event) {
@@ -49,31 +49,31 @@ self.addEventListener('activate', function(event) {
 });
 
 //Cache with network fallback strategy
-self.addEventListener('fetch', function(event) {
-    event.respondWith(
-        caches.match(event.request)
-            .then(function(response) {
-                if(response) {
-                    return response;
-                } else {
-                    return fetch(event.request)
-                        .then(function(res){
-                            return caches.open(CACHE_DYNAMIC_NAME)
-                                .then(function(cache) {
-                                    cache.put(event.request.url, res.clone());
-                                    return res;
-                                });
-                        })
-                        .catch(function(err){
-                            return caches.open(CACHE_STATIC_NAME)
-                                    .then(function(cache){
-                                        return cache.match('/fallback.html');
-                                    });
-                        });
-                }
-            })
-    );
-});
+// self.addEventListener('fetch', function(event) {
+//     event.respondWith(
+//         caches.match(event.request)
+//             .then(function(response) {
+//                 if(response) {
+//                     return response;
+//                 } else {
+//                     return fetch(event.request)
+//                         .then(function(res){
+//                             return caches.open(CACHE_DYNAMIC_NAME)
+//                                 .then(function(cache) {
+//                                     cache.put(event.request.url, res.clone());
+//                                     return res;
+//                                 });
+//                         })
+//                         .catch(function(err){
+//                             return caches.open(CACHE_STATIC_NAME)
+//                                     .then(function(cache){
+//                                         return cache.match('/fallback.html');
+//                                     });
+//                         });
+//                 }
+//             })
+//     );
+// });
 
 //Cache Only strategy
 // self.addEventListener('fetch', function(event){
@@ -101,3 +101,44 @@ self.addEventListener('fetch', function(event) {
 //             })
 //     );
 // });
+
+//Cache then network strategy
+self.addEventListener('fetch', function(event){
+    var url = 'https://httpbin.org/get';
+    if(event.request.url.indexOf(url) > -1){
+        event.respondWith(
+            caches.open(CACHE_DYNAMIC_NAME)
+                .then(function(cache){
+                    return fetch(event.request)
+                            .then(function(response){
+                                cache.put(event.request, response.clone());
+                                return response;
+                            });
+                })
+        );
+    } else {
+        event.respondWith(
+            caches.match(event.request)
+                .then(function(response){
+                    if(response){
+                        return response;
+                    } else {
+                        return fetch(event.request)
+                            .then(function(res){
+                                return caches.open(CACHE_DYNAMIC_NAME)
+                                    .then(function(cache){
+                                        cache.put(event.request.url, res.clone());
+                                        return res;
+                                    });
+                            })
+                            .catch(function(err){
+                                return caches.open(CACHE_STATIC_NAME)
+                                    .then(function(cache){
+                                        return cache.match('/fallback.html');
+                                    });
+                            });
+                    }
+                })
+        );
+    }
+})
