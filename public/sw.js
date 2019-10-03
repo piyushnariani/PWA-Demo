@@ -1,5 +1,5 @@
 var CACHE_STATIC = 'static';
-var CACHE_STATIC_VERSION = '4';
+var CACHE_STATIC_VERSION = '5';
 var CACHE_STATIC_NAME = CACHE_STATIC + "-v" + CACHE_STATIC_VERSION;
 
 var CACHE_DYNAMIC = 'dynamic';
@@ -58,7 +58,7 @@ self.addEventListener('fetch', function(event) {
                         .then(function(res){
                             return caches.open(CACHE_DYNAMIC_NAME)
                                 .then(function(cache) {
-                                    cache.put(event.request.url, res.clone());
+                                    //cache.put(event.request.url, res.clone());
                                     return res;
                                 });
                         });
