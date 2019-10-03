@@ -48,6 +48,7 @@ self.addEventListener('activate', function(event) {
     return self.clients.claim();
 });
 
+//Cache with network fallback strategy
 self.addEventListener('fetch', function(event) {
     event.respondWith(
         caches.match(event.request)
@@ -74,7 +75,6 @@ self.addEventListener('fetch', function(event) {
     );
 });
 
-
 //Cache Only strategy
 // self.addEventListener('fetch', function(event){
 //     event.respondWith(caches.match(event.request));
@@ -83,4 +83,21 @@ self.addEventListener('fetch', function(event) {
 //Network only strategy
 // self.addEventListener('fetch', function(event){
 //     event.respondWith(fetch(event.request));
+// });
+
+//Network with cache fallback strategy
+// self.addEventListener('fetch', function(event){
+//     event.respondWith(
+//         fetch(event.request)
+//             .then(function(res){
+//                 return caches.open(CACHE_DYNAMIC_NAME)
+//                     .then(function(cache){
+//                         cache.put(event.request.url, res.clone());
+//                         return res;
+//                     });
+//             })
+//             .catch(function(err){
+//                 return caches.match(event.request);
+//             })
+//     );
 // });
