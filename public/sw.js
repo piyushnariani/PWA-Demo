@@ -118,11 +118,14 @@ self.addEventListener('fetch', function(event){
         );
     } else {
         event.respondWith(
+            //Check if the response if present in the cache
             caches.match(event.request)
                 .then(function(response){
                     if(response){
                         return response;
-                    } else {
+                    } 
+                    //Fetch from web when not present in the cache and then store in the cache
+                    else {
                         return fetch(event.request)
                             .then(function(res){
                                 return caches.open(CACHE_DYNAMIC_NAME)
@@ -134,7 +137,9 @@ self.addEventListener('fetch', function(event){
                             .catch(function(err){
                                 return caches.open(CACHE_STATIC_NAME)
                                     .then(function(cache){
-                                        return cache.match('/fallback.html');
+                                        if(event.request.url.indexOf('/help')){
+                                            return cache.match('/fallback.html');
+                                        }
                                     });
                             });
                     }
