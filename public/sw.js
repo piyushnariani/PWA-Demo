@@ -15,6 +15,7 @@ self.addEventListener('install', function(event) {
                 cache.addAll([
                     '/',
                     '/index.html',
+                    '/fallback.html',
                     '/src/js/app.js',
                     '/src/js/feed.js',
                     '/src/js/promise.js',
@@ -61,6 +62,12 @@ self.addEventListener('fetch', function(event) {
                                     cache.put(event.request.url, res.clone());
                                     return res;
                                 });
+                        })
+                        .catch(function(err){
+                            return caches.open(CACHE_STATIC_NAME)
+                                    .then(function(cache){
+                                        return cache.match('/fallback.html');
+                                    });
                         });
                 }
             })
