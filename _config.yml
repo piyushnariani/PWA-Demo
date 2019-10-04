@@ -1,1 +1,5 @@
+title: PWAGram
+description: A progressive web app implementing manifest, service worker, indexedDB, background sync, push notifications and accessing hardware
+show_downloads: true
+google_analytics:
 theme: jekyll-theme-cayman
