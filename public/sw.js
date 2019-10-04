@@ -6,6 +6,19 @@ var CACHE_DYNAMIC = 'dynamic';
 var CACHE_DYNAMIC_VERSION = '5';
 var CACHE_DYNAMIC_NAME = CACHE_DYNAMIC + "-v" + CACHE_DYNAMIC_VERSION;
 
+function trimCache(cacheName, maxItems) {
+    caches.open(cacheName)
+        .then(function(cache){
+            return cache.keys()
+        })
+        .then(function(keys){
+            if(keys.length > maxItems){
+                cache.delete(keys[0])
+                    .then(trimCache(cacheName, maxItems));
+            }
+        });
+}
+
 var STATIC_FILES = [
     '/',
     '/index.html',
@@ -113,6 +126,7 @@ self.addEventListener('fetch', function(event){
                 .then(function(cache){
                     return fetch(event.request)
                             .then(function(response){
+                                trimCache(CACHE_DYNAMIC_NAME, 20);
                                 cache.put(event.request, response.clone());
                                 return response;
                             });
@@ -136,6 +150,7 @@ self.addEventListener('fetch', function(event){
                             .then(function(res){
                                 return caches.open(CACHE_DYNAMIC_NAME)
                                     .then(function(cache){
+                                        trimCache(CACHE_DYNAMIC_NAME, 20);
                                         cache.put(event.request.url, res.clone());
                                         return res;
                                     });
