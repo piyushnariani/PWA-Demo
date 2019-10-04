@@ -1,5 +1,5 @@
 var CACHE_STATIC = 'static';
-var CACHE_STATIC_VERSION = '6';
+var CACHE_STATIC_VERSION = '7';
 var CACHE_STATIC_NAME = CACHE_STATIC + "-v" + CACHE_STATIC_VERSION;
 
 var CACHE_DYNAMIC = 'dynamic';
@@ -10,12 +10,12 @@ function trimCache(cacheName, maxItems) {
     caches.open(cacheName)
         .then(function(cache){
             return cache.keys()
-        })
-        .then(function(keys){
-            if(keys.length > maxItems){
-                cache.delete(keys[0])
-                    .then(trimCache(cacheName, maxItems));
-            }
+                .then(function(keys){
+                    if(keys.length > maxItems){
+                        cache.delete(keys[0])
+                            .then(trimCache(cacheName, maxItems));
+                    }
+                });
         });
 }
 
