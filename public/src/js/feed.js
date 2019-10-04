@@ -62,7 +62,7 @@ function createCard(data) {
   cardTitle.style.height = '180px';
   cardWrapper.appendChild(cardTitle);
   var cardTitleTextElement = document.createElement('h2');
-  cardTitleTextElement.style.color = 'black';
+  cardTitleTextElement.style.color = 'white';
   cardTitleTextElement.className = 'mdl-card__title-text';
   cardTitleTextElement.textContent = data.title;
   cardTitle.appendChild(cardTitleTextElement);

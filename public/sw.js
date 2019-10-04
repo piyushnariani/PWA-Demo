@@ -1,5 +1,7 @@
+importScripts('/src/js/idb.js');
+
 var CACHE_STATIC = 'static';
-var CACHE_STATIC_VERSION = '7';
+var CACHE_STATIC_VERSION = '9';
 var CACHE_STATIC_NAME = CACHE_STATIC + "-v" + CACHE_STATIC_VERSION;
 
 var CACHE_DYNAMIC = 'dynamic';
@@ -25,6 +27,7 @@ var STATIC_FILES = [
     '/index.html',
     '/fallback.html',
     '/src/js/app.js',
+    '/src/js/idb.js',
     '/src/js/feed.js',
     '/src/js/promise.js',
     '/src/js/fetch.js',
@@ -36,6 +39,12 @@ var STATIC_FILES = [
     'https://fonts.googleapis.com/icon?family=Material+Icons',
     'https://cdnjs.cloudflare.com/ajax/libs/material-design-lite/1.3.0/material.indigo-pink.min.css'
 ];
+
+var dbPromise = idb.open('posts-store', 1, function(db) {
+    if(!db.objectStoreNames.contains('posts')){
+        db.createObjectStore('posts', {keyPath: 'id'});
+    }
+})
 
 self.addEventListener('install', function(event) {
     console.log('[Service Worker] Installing service worker...', event);
@@ -120,18 +129,26 @@ self.addEventListener('activate', function(event) {
 
 //Cache then network strategy
 self.addEventListener('fetch', function(event){
-    var url = 'https://httpbin.org/get';
+    var url = 'https://pwagram-1e19f.firebaseio.com/posts';
     if(event.request.url.indexOf(url) > -1){
         event.respondWith(
-            caches.open(CACHE_DYNAMIC_NAME)
-                .then(function(cache){
-                    return fetch(event.request)
-                            .then(function(response){
-                                // trimCache(CACHE_DYNAMIC_NAME, 20);
-                                cache.put(event.request, response.clone());
-                                return response;
-                            });
-                })
+            fetch(event.request)
+                .then(function(response){
+                    var clonedRes = response.clone();
+                    clonedRes.json()
+                        .then(function(data){
+                            for(var key in data){
+                                dbPromise
+                                    .then(function(db){
+                                        var tx = db.transaction('posts', 'readwrite');
+                                        var store = tx.objectStore('posts');
+                                        store.put(data[key]);
+                                        return tx.complete;
+                                    })
+                            }
+                        })
+                    return response;
+                })    
         );
     } else if(inInArray(event.request.url, STATIC_FILES)){
         event.respondWith(
