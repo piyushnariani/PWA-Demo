@@ -1,5 +1,5 @@
 var CACHE_STATIC = 'static';
-var CACHE_STATIC_VERSION = '8';
+var CACHE_STATIC_VERSION = '7';
 var CACHE_STATIC_NAME = CACHE_STATIC + "-v" + CACHE_STATIC_VERSION;
 
 var CACHE_DYNAMIC = 'dynamic';
@@ -120,7 +120,7 @@ self.addEventListener('activate', function(event) {
 
 //Cache then network strategy
 self.addEventListener('fetch', function(event){
-    var url = 'https://pwagram-1e19f.firebaseio.com/posts.json';
+    var url = 'https://httpbin.org/get';
     if(event.request.url.indexOf(url) > -1){
         event.respondWith(
             caches.open(CACHE_DYNAMIC_NAME)
