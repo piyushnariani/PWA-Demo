@@ -185,6 +185,43 @@ self.addEventListener('fetch', function(event){
     }
 })
 
+self.addEventListener('sync', function(event){
+  console.log('[SW] Syncing posts', event);
+  if(event.tag === 'sync-new-posts'){
+      console.log('[SW] Syncing...');
+      event.waitUntil(
+          readAllData('sync-posts')
+            .then(function(data){
+                for(var dt of data){
+                    fetch('https://pwagram-1e19f.firebaseio.com/posts.json', {
+                        method: 'POST',
+                        headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                        id: dt.id,
+                        title: dt.title,
+                        location: dt.location,
+                        image: 'https://firebasestorage.googleapis.com/v0/b/pwagram-1e19f.appspot.com/o/sf-boat.jpg?alt=media&token=e9389353-1039-46ac-876d-9b488944ed29'
+                        })
+                    })
+                    .then(function(res){
+                        console.log('Sent Data', res);
+                        if(res.ok){
+                            deleteItem('sync-posts', dt.id);
+                        }
+                    })
+                    .catch(function(err){
+                        console.log('Error while syncing!', err);
+                        
+                    })
+                }
+            })
+      );
+  }
+})
+
 function inInArray(string, array){
     for(var i=0; i<array.length; i++){
         if(array[i] === string){

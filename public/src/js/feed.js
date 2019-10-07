@@ -53,10 +53,30 @@ function clearCard() {
 }
 
 function updateUI(data){
+  clearCard();
   for(var i=0; i< data.length; i++){
-    clearCard();
     createCard(data[i]);
   }
+}
+
+function sendData(){
+  fetch('https://pwagram-1e19f.firebaseio.com/posts.json', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({
+      id: new Date().toISOString(),
+      title: titleInput.value,
+      location: locationInput.value,
+      image: 'https://firebasestorage.googleapis.com/v0/b/pwagram-1e19f.appspot.com/o/sf-boat.jpg?alt=media&token=e9389353-1039-46ac-876d-9b488944ed29'
+    })
+  })
+  .then(function(res){
+    console.log('Sent Data', res);
+    updateUI();
+  })
 }
 
 function createCard(data) {
@@ -145,7 +165,25 @@ form.addEventListener('submit', function(event) {
   if('serviceWorker' in navigator && 'SyncManager' in window){
     navigator.serviceWorker.ready
       .then(function(sw) {
-        sw.sync.register('sync-new-post');
+        var post = {
+          id: new Date().toISOString(),
+          title: titleInput.value,
+          location: locationInput.value
+        };
+        writeData('sync-posts', post)
+          .then(function() {
+            sw.sync.register('sync-new-posts');
+          })
+          .then(function() {
+            var snackbarContainer = document.querySelector('#confirmation-toast');
+            var data = {message: 'Your post was saved for syncing!'};
+            snackbarContainer.MaterialSnackbar.showSnackbar(data);
+          })
+          .catch(function(err){
+            console.log(err);
+          });
       });
+  } else {
+    sendData();
   }
 })
