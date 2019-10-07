@@ -136,7 +136,10 @@ self.addEventListener('fetch', function(event){
             fetch(event.request)
                 .then(function(response){
                     var clonedRes = response.clone();
-                    clonedRes.json()
+                    clearAllData('posts')
+                        .then(function() {
+                            return clonedRes.json();
+                        })
                         .then(function(data){
                             for(var key in data){
                                 writeData('posts', data[key]);
