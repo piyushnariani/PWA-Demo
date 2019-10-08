@@ -286,5 +286,8 @@ self.addEventListener('notificationclick', function(event){
     } else {
         console.log(action);
     }
-    
+})
+
+self.addEventListener('notificationclose', function(event){
+    console.log('Notification was closed', event);
 })
