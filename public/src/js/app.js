@@ -55,7 +55,11 @@ function dislayConfirmedNotification() {
         vibrate: [100, 50, 200], //Vibration - Pause - Vibration
         badge: 'src/images/icons/app-icon-96x96.png',
         tag: 'confirm-notification', //Acts as an id for notification
-        renotify: true //Enables notification to pop and vibrate even if its with same id. False disables the renotify
+        renotify: true, //Enables notification to pop and vibrate even if its with same id. False disables the renotify
+        actions: [
+            {action: 'confirm', title: 'Okay', icon: '/src/images/icons/app-icon-96x96.png'},
+            {action: 'cancel', title: 'Cancel', icon: '/src/images/icons/app-icon-96x96.png'}
+        ]
     };
     if('serviceWorker' in navigator){
         navigator.serviceWorker.ready
