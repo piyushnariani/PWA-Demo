@@ -47,7 +47,13 @@ if('Notification' in window){
 
 function dislayConfirmedNotification() {
     var options = {
-        body: 'You have successfully subscribed to the notification service!'
+        body: 'You have successfully subscribed to the notification service!',
+        icon: '/src/images/icons/app-icon-144x144.png',
+        image: '/src/images/sf-boat.jpg',
+        dir: 'ltr',
+        lang: 'en-US', //BCP 47
+        vibrate: [100, 50, 200], //Vibration - Pause - Vibration
+        badge: 'src/images/icons/app-icon-96x96.png'
     };
     if('serviceWorker' in navigator){
         navigator.serviceWorker.ready
