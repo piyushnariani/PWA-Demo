@@ -60,7 +60,7 @@ function updateUI(data){
 }
 
 function sendData(){
-  fetch('https://pwagram-1e19f.firebaseio.com/posts.json', {
+  fetch('https://us-central1-pwagram-1e19f.cloudfunctions.net/storePostData', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
