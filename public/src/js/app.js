@@ -31,9 +31,9 @@ function askForNotificationPermission() {
         if(result!=='granted'){
             console.log('No notification permission granted');
         } else {
-            
+            dislayConfirmedNotification();
         }
-    })
+    });
 }
 
 if('Notification' in window){    
@@ -43,4 +43,11 @@ if('Notification' in window){
     }
 } else {
       
+}
+
+function dislayConfirmedNotification() {
+    var options = {
+        body: 'You have successfully subscribed to the notification service!'
+    };
+    new Notification('Successfully Subscribed', options);
 }
