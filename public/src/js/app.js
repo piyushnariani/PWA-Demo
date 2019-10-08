@@ -49,5 +49,13 @@ function dislayConfirmedNotification() {
     var options = {
         body: 'You have successfully subscribed to the notification service!'
     };
-    new Notification('Successfully Subscribed', options);
+    if('serviceWorker' in navigator){
+        navigator.serviceWorker.ready
+            .then(function(sw){
+                sw.showNotification('Successfully Subscribed from SW', options);
+            });
+    }
+    else{
+        new Notification('Successfully Subscribed', options);
+    }
 }
