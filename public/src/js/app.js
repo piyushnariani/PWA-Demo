@@ -31,12 +31,13 @@ function askForNotificationPermission() {
         if(result!=='granted'){
             console.log('No notification permission granted');
         } else {
-            dislayConfirmedNotification();
+            // dislayConfirmedNotification();
+            configurePushSubscription();
         }
     });
 }
 
-if('Notification' in window){    
+if('Notification' in window && 'serviceWorker' in navigator){    
     for(var i = 0; i < enableNotificationButtons.length; i++){
         enableNotificationButtons[i].style.display = 'inline-block';
         enableNotificationButtons[i].addEventListener('click', askForNotificationPermission);
@@ -61,13 +62,52 @@ function dislayConfirmedNotification() {
             {action: 'cancel', title: 'Cancel', icon: '/src/images/icons/app-icon-96x96.png'}
         ]
     };
-    if('serviceWorker' in navigator){
-        navigator.serviceWorker.ready
-            .then(function(sw){
-                sw.showNotification('Successfully Subscribed from SW', options);
-            });
+    
+    navigator.serviceWorker.ready
+        .then(function(sw){
+            sw.showNotification('Successfully Subscribed', options);
+        });
+}
+
+function configurePushSubscription(){
+    if(!('serviceWorker' in navigator)){
+        return;
     }
-    else{
-        new Notification('Successfully Subscribed', options);
-    }
+    var swReg;
+    navigator.serviceWorker.ready
+        .then(function(sw){
+            swReg = sw;
+            return sw.pushManager.getSubscription();
+        })
+        .then(function(subs){
+            if(subs===null){
+                //Create new subscription
+                var vapidPublicKey = 'BHmvr0oBlIFZ4FBb2HQw0w6bce1z3YRC5HtuzM5T7d8YNXb3D3JRNUa4SjSTbbMYxdQNDYrVKKjRx8GI4Z-NDm4';
+                var convertedVapidPublicKey = urlBase64ToUint8Array(vapidPublicKey);
+                return swReg.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: convertedVapidPublicKey
+                });
+            } else {
+                //We have a subscription
+            }
+        })
+        .then(function(newSub){
+            return fetch('https://pwagram-1e19f.firebaseio.com/subscriptions.json', {
+                method : 'POST',
+                headers: {
+                    'Content-Type' : 'application/json',
+                    'Accept' : 'application/json'
+                },
+                body: JSON.stringify(newSub)
+            })
+        })
+        .then(function(res) {
+            if(res.ok){
+                dislayConfirmedNotification();
+            }
+        })
+        .catch(function(err){
+            console.log(err);
+        })
 }
