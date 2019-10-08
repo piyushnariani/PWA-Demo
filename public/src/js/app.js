@@ -50,10 +50,12 @@ function dislayConfirmedNotification() {
         body: 'You have successfully subscribed to the notification service!',
         icon: '/src/images/icons/app-icon-144x144.png',
         image: '/src/images/sf-boat.jpg',
-        dir: 'ltr',
+        dir: 'ltr', //left to right
         lang: 'en-US', //BCP 47
         vibrate: [100, 50, 200], //Vibration - Pause - Vibration
-        badge: 'src/images/icons/app-icon-96x96.png'
+        badge: 'src/images/icons/app-icon-96x96.png',
+        tag: 'confirm-notification', //Acts as an id for notification
+        renotify: true //Enables notification to pop and vibrate even if its with same id. False disables the renotify
     };
     if('serviceWorker' in navigator){
         navigator.serviceWorker.ready
