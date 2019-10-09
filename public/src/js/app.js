@@ -81,6 +81,7 @@ function configurePushSubscription(){
         })
         .then(function(subs){
             if(subs===null){
+                console.log("Creating sub");
                 //Create new subscription
                 var vapidPublicKey = 'BHmvr0oBlIFZ4FBb2HQw0w6bce1z3YRC5HtuzM5T7d8YNXb3D3JRNUa4SjSTbbMYxdQNDYrVKKjRx8GI4Z-NDm4';
                 var convertedVapidPublicKey = urlBase64ToUint8Array(vapidPublicKey);
@@ -93,6 +94,7 @@ function configurePushSubscription(){
             }
         })
         .then(function(newSub){
+            console.log(newSub);
             return fetch('https://pwagram-1e19f.firebaseio.com/subscriptions.json', {
                 method : 'POST',
                 headers: {
